@@ -1,0 +1,190 @@
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+        }
+        .option {
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .custom-radio {
+            display: block;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .custom-radio.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container" id="quiz-container">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div>
+        <button class="btn" id="prevButton" onclick="prevQuestion()" style="display: none;">Previous</button>
+        <button class="btn" id="nextButton" onclick="nextQuestion()">Next</button>
+        <button class="btn" id="submitButton" onclick="submitQuiz()" style="display: none;">Submit</button>
+    </div>
+</div>
+
+<script>
+    var currentQuestion = 0;
+    var score = 0;
+
+    var questions = [
+        {
+            question: "Who is the current captain of the Indian cricket team?",
+            options: ["Virat Kohli", "Rohit Sharma", "KL Rahul", "Rishabh Pant"],
+            answer: 0
+        },
+        {
+            question: "Who holds the record for the highest individual score by an Indian cricketer in Test cricket?",
+            options: ["Sachin Tendulkar", "Virender Sehwag", "V.V.S. Laxman", "Rahul Dravid"],
+            answer: 1
+        },
+        {
+            question: "In which year did India win their first Cricket World Cup?",
+            options: ["1983", "1975", "2011", "2007"],
+            answer: 0
+        },
+        {
+            question: "Who is known as the 'God of Indian Cricket'?",
+            options: ["Sachin Tendulkar", "Sunil Gavaskar", "Kapil Dev", "Rahul Dravid"],
+            answer: 0
+        },
+        {
+            question: "Which Indian cricketer has the most centuries in One Day Internationals?",
+            options: ["Sachin Tendulkar", "Virat Kohli", "Rohit Sharma", "Sourav Ganguly"],
+            answer: 1
+        },
+        {
+            question: "Who was the captain of the Indian cricket team when they won the 2007 ICC World Twenty20?",
+            options: ["MS Dhoni", "Sachin Tendulkar", "Rahul Dravid", "Yuvraj Singh"],
+            answer: 0
+        },
+        {
+            question: "Who was the first Indian cricketer to score a double century in One Day Internationals?",
+            options: ["Sachin Tendulkar", "Virender Sehwag", "Rohit Sharma", "Virat Kohli"],
+            answer: 2
+        },
+        {
+            question: "Which Indian bowler has taken the most wickets in Test cricket?",
+            options: ["Anil Kumble", "Kapil Dev", "Harbhajan Singh", "Ravichandran Ashwin"],
+            answer: 3
+        },
+        {
+            question: "Who is the highest run-scorer in the history of Indian Premier League (IPL)?",
+            options: ["Virat Kohli", "Suresh Raina", "Rohit Sharma", "David Warner"],
+            answer: 2
+        },
+        {
+            question: "Who was the coach of the Indian cricket team when they won the 2011 ICC Cricket World Cup?",
+            options: ["Gary Kirsten", "Ravi Shastri", "John Wright", "Anil Kumble"],
+            answer: 0
+        }
+    ];
+
+    function loadQuestion() {
+        var q = questions[currentQuestion];
+        document.getElementById('question').innerHTML = (currentQuestion + 1) + ". " + q.question;
+        var optionsHtml = '';
+        for (var i = 0; i < q.options.length; i++) {
+            optionsHtml += `<div class="custom-radio" onclick="selectOption(this, ${i})">${q.options[i]}</div>`;
+        }
+        document.getElementById('options').innerHTML = optionsHtml;
+    }
+
+    function selectOption(ele, index) {
+        var options = ele.parentElement.children;
+        for (var i = 0; i < options.length; i++) {
+            options[i].classList.remove('selected');
+        }
+        ele.classList.add('selected');
+    }
+
+    function nextQuestion() {
+        var selectedOption = document.querySelector('.custom-radio.selected');
+        if (selectedOption) {
+            if (parseInt(selectedOption.dataset.index) === questions[currentQuestion].answer) {
+                score++;
+            }
+            selectedOption.classList.remove('selected');
+        }
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+            if (currentQuestion > 0) {
+                document.getElementById('prevButton').style.display = 'inline-block';
+            }
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('nextButton').style.display = 'none';
+                document.getElementById('submitButton').style.display = 'inline-block';
+            }
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 0) {
+            currentQuestion--;
+            loadQuestion();
+            if (currentQuestion === 0) {
+                document.getElementById('prevButton').style.display = 'none';
+            }
+            if (currentQuestion < questions.length - 1) {
+                document.getElementById('nextButton').style.display = 'inline-block';
+                document.getElementById('submitButton').style.display = 'none';
+            }
+        }
+    }
+
+    function submitQuiz() {
+        var selectedOption = document.querySelector('.custom-radio.selected');
+        if (selectedOption) {
+            if (parseInt(selectedOption.dataset.index) === questions[currentQuestion].answer) {
+                score++;
+            }
+        }
+        var quizContainer = document.getElementById('quiz-container');
+        quizContainer.innerHTML = `<h2>Quiz Completed!</h2><p>Your score is: ${score} out of ${questions.length}</p>`;
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
